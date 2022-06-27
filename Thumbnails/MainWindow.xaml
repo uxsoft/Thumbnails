@@ -11,9 +11,8 @@
         Name="grid"
         AllowDrop="True" 
         Background="White"
-        DropCompleted="Grid_DropCompleted"
-        DragLeave="Grid_DragLeave" 
         Drop="Grid_Drop"
+        DragLeave="Grid_DragLeave" 
         DragEnter="Grid_DragEnter">
         
         <TextBlock  

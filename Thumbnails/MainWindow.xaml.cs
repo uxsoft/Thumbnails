@@ -35,24 +35,15 @@ namespace Thumbnails
 
         private void Grid_DragEnter(object sender, DragEventArgs e)
         {
-            grid.Background = new SolidColorBrush(Colors.Red);
+            grid.Background = new SolidColorBrush(Colors.LightCyan);
             e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Link;
-        }
-
-        private void Grid_DropCompleted(UIElement sender, DropCompletedEventArgs e)
-        {
-            Console.WriteLine(e.DropResult);
-        }
-
-        private void border_DragOver(object sender, DragEventArgs e)
-        {
-
         }
 
         private async void Grid_Drop(object sender, DragEventArgs e)
         {
             try
             {
+                grid.Background = new SolidColorBrush(Colors.White);
                 var files = await e.DataView.GetStorageItemsAsync();
                 ThumbnailService.ProcessStorageItems(files);
             }

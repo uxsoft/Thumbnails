@@ -65,7 +65,7 @@ namespace Thumbnails
                 using var scaledBitmap = sourceBitmap.Resize(new SKImageInfo(targetWidth, targetHeight), SKFilterQuality.High);
                 using var scaledImage = SKImage.FromBitmap(scaledBitmap);
                 using var croppedImage = scaledImage.Subset(new SKRectI(x, y, Width + x, Height + y));
-                using SKData data = croppedImage.Encode();
+                using SKData data = croppedImage.Encode(SKEncodedImageFormat.Jpeg, 80);
 
                 var outputPath =
                     Path.Combine(
