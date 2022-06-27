@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Thumbnails (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Thumbnails (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
