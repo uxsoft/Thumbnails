@@ -11,8 +11,8 @@ namespace Thumbnails
 {
     public static class ThumbnailService
     {
-        public static int Width { get; set; } = 300;
-        public static int Height { get; set; } = 200;
+        public static int Width { get; set; } = 500;
+        public static int Height { get; set; } = 400;
 
         public static void ProcessStorageItems(IReadOnlyList<IStorageItem> files)
         {
@@ -32,8 +32,30 @@ namespace Thumbnails
         {
             try
             {
+                //path = Rename(path);
+                Resize(path);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private static string Rename(string path)
+        {
+            var dir = Path.GetDirectoryName(path);
+            var ext = path[^8..];
+            var name = "tana-a-honza-wedding-";
+            var newPath = Path.Combine(dir, name + ext);
+            File.Move(path, newPath);
+            return newPath;
+        }
+
+        private static void Resize(string path)
+        {
+            try
+            {
                 using var sourceStream = File.OpenRead(path);
-                //using var sourceBitmap = SKBitmap.Decode(sourceStream);
                 using var skiaStream = new SKManagedStream(sourceStream, false);
                 using var sourceImage = SKImage.FromEncodedData(skiaStream);
                 using var sourceBitmap = SKBitmap.FromImage(sourceImage);
@@ -42,42 +64,27 @@ namespace Thumbnails
                 var sourceRatio = (double)sourceBitmap.Width / sourceBitmap.Height;
                 var targetRatio = (double)Width / Height;
 
-                int targetHeight;
-                int targetWidth;
-                int x;
-                int y;
-
-                if (sourceRatio > targetRatio)
-                {
-                    targetHeight = Height;
-                    targetWidth = (int)(sourceBitmap.Width * ((double)Height / sourceBitmap.Height));
-                    x = (int)((targetWidth - Width) / 2.0);
-                    y = 0;
-                }
-                else
-                {
-                    targetHeight = (int)(sourceBitmap.Height * ((double)Width / sourceBitmap.Width));
-                    targetWidth = Width;
-                    x = 0;
-                    y = (int)((targetHeight - Height) / 2.0);
-                }
+                (int x, int y, int targetWidth, int targetHeight) =
+                    Scaling.MaxWidth(Width, sourceBitmap.Width, sourceBitmap.Height);
 
                 using var scaledBitmap = sourceBitmap.Resize(new SKImageInfo(targetWidth, targetHeight), SKFilterQuality.High);
                 using var scaledImage = SKImage.FromBitmap(scaledBitmap);
-                using var croppedImage = scaledImage.Subset(new SKRectI(x, y, Width + x, Height + y));
-                using SKData data = croppedImage.Encode(SKEncodedImageFormat.Jpeg, 80);
+                using var croppedImage = scaledImage.Subset(new SKRectI(x, y, targetWidth + x, targetHeight + y));
+                using var data = croppedImage.Encode(SKEncodedImageFormat.Jpeg, 90);
 
                 var outputPath =
                     Path.Combine(
                         Path.GetDirectoryName(path),
+                        "thumbnails",
                         Path.GetFileNameWithoutExtension(path) + "_thumb.jpg");
                 using var outputStream = File.OpenWrite(outputPath);
                 data.SaveTo(outputStream);
             }
             catch (Exception ex)
             {
-
             }
         }
+
+
     }
 }
